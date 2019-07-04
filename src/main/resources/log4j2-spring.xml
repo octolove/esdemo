@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="true" scanPeriod="20 seconds">
+    <!-- 参数-->
+    <springProperty name="moduleid" scope="context" source="esdemo"/>
+
+    <!-- 文件输出格式 -->
+    <property name="log.pattern"
+              value="%d{HH:mm:ss.SSS} [${moduleid:-},%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-Span-Export:-}] [%thread] %-5level %logger{40} %X{txlog} - %msg%n"/>
+
+    <!-- 每天产生一个文件 -->
+    <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="logfile">
+        <!--日志名,指定最新的文件名，其他文件名使用FileNamePattern -->
+        <file>/opt/log/${moduleid}-${env}-${HOSTNAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名,可设置文件类型为gz,开启文件压缩-->
+            <fileNamePattern>
+                /opt/log/${moduleid}-${HOSTNAME}.%d{yyyy-MM-dd}.log
+            </fileNamePattern>
+            <!-- 文件最大保存历史数量 -->
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.yum.ec3.base.logback.ThrowableEnhancedPatternLayout">
+                <pattern>${log.pattern}</pattern>
+            </layout>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="error-log" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/opt/log/${moduleid}-${env}-${HOSTNAME}-error.log
+        </file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/opt/log/${moduleid}-${HOSTNAME}.%d{yyyy-MM-dd}-error.log
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.yum.ec3.base.logback.ThrowableEnhancedPatternLayout">
+                <pattern>${log.pattern}</pattern>
+            </layout>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="console">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>${log.pattern}</pattern>
+            </layout>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <logger level="WARN" name="com.netflix.discovery.InstanceRegionChecker"/>
+    <logger level="INFO" name="org.springframework"/>
+    <logger level="INFO" name="org.eclipse"/>
+    <logger level="INFO" name="org.apache"/>
+    <logger level="INFO" name="com.netflix"/>
+    <logger level="INFO" name="springfox.documentation"/>
+    <logger level="INFO" name="com.zaxxer.hikari.pool"/>
+    <logger level="INFO" name="com.microsoft.sqlserver.jdbc"/>
+    <logger level="INFO" name="org.mybatis"/>
+    <logger level="INFO" name="io.netty"/>
+    <logger level="INFO" name="org.hibernate.validator"/>
+    <logger level="INFO" name="ocom.zaxxer.hikari"/>
+    <logger level="INFO" name="com.netflix"/>
+
+    <root level="INFO">
+        <appender-ref ref="logfile"/>
+        <appender-ref ref="console"/>
+        <appender-ref ref="error-log"/>
+    </root>
+</configuration>

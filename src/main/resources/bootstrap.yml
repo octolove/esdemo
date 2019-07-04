@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/man818
+    username: root
+    password: root123
+    type: com.zaxxer.hikari.HikariDataSource
+    #连接池
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: DatebookHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+server:
+  port: 9001
+  tomcat:
+    uri-encoding: UTF-8
+
+
+#es集群
+elasticsearch:
+  esHost:
+  - ip: 10.20.12.98
+    port: 9200
+  - ip: 10.20.12.98
+    port: 9210
